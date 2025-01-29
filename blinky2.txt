@@ -1,0 +1,14 @@
+\ \ #include lib_registers.txt
+\ \ #include lib_systick.txt
+
+
+: blinky2
+	cr ." to quit: press any key"
+    MODE_OUTPUT 13 PORTC set-moder		\ PC13 -> output mode
+	13 bit PORTC _pODR bis!				\ LED off
+	begin
+		13 bit PORTC _pODR xor!			\ toggle red LED
+		500 delay-ms
+		key?
+	until
+;
