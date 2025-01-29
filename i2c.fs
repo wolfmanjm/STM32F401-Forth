@@ -321,20 +321,7 @@
 	then
 ;
 
-: i2c-readbuf ( n c-bufaddr slaveaddr -- errflg )
-	2 pick 1 < if ." ERROR Must have at least 1 in buffer" 2drop drop true exit then
-	i2c-7bitaddread i2c-sendaddr if 2drop true exit then
-
-	over \ n addr n
-	case
-		0 of i2c-clearaddr i2c-stop endof    \ not used
-		1 of i2c-disableack i2c-clearaddr i2c-stop endof
-		2 of i2c-disableack	i2c-enablepos i2c-clearaddr endof
-		\ >= 3
-		i2c-enableack i2c-clearaddr
-	endcase
-
-			\ -- xfersize c-bufaddr
+: _i2c_readbufpt2 ( xfersize c-bufaddr -- errflg )
 	swap 	\ -- buf xfersize
 	begin
  		dup 3 <= if
@@ -364,6 +351,22 @@
 	false
 ;
 
+: i2c-readbuf ( n c-bufaddr slaveaddr -- errflg )
+	2 pick 1 < if ." ERROR Must have at least 1 in buffer" 2drop drop true exit then
+	i2c-7bitaddread i2c-sendaddr if 2drop true exit then
+
+	over \ n addr n
+	case
+		0 of i2c-clearaddr i2c-stop endof    \ not used
+		1 of i2c-disableack i2c-clearaddr i2c-stop endof
+		2 of i2c-disableack	i2c-enablepos i2c-clearaddr endof
+		\ >= 3
+		i2c-enableack i2c-clearaddr
+	endcase
+				\ -- xfersize c-bufaddr
+	_i2c_readbufpt2
+;
+
 \ for i2c eeprom access, very subtle differences to i2c-readbuf
 : i2c-memory-read ( n c-bufaddr memaddr slaveaddr -- errflg )
 	3 pick 1 < if ." ERROR Must have at least 1 in buffer" 2drop 2drop true exit then
@@ -385,42 +388,13 @@
 
 	over \ n addr n
 	case
-		0 of i2c-clearaddr i2c-stop endof    \ not used
 		1 of i2c-disableack i2c-clearaddr i2c-stop endof
 		2 of i2c-disableack	i2c-enablepos i2c-clearaddr endof
 		\ >= 3 (This is different to i2c-readbuf)
 		i2c-clearaddr
 	endcase
-
-	\ TODO Note the rest here is identical to i2c-readbuf
-			\ -- xfersize c-bufaddr
-	swap 	\ -- buf xfersize
-	begin
- 		dup 3 <= if
-			dup case
-				0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
-				1 of over _i2c-mread1 endof
-				2 of over _i2c-mread2 endof
-				3 of over _i2c-mread3 endof
-					 ." ERROR unexpected xfersize >3" 2drop true exit
-			endcase
-		else 		\ more than 3
-			over _i2c-mread4+
-		then
-
-			  \ -- c-bufaddr xfersize n
-		dup 0= if 2drop drop true exit then  \ if error detected
-		\ increment buffer address by number of bytes read
-		rot   \ -- xfersize n buf
-		over  \ -- xfersize n buf n
-		+ 	  \ -- xfersize n newbuf
-		-rot  \ -- newbuf xfersize n
-		-     \ decrement xfersize by number read
-			  \ -- buf xfersize
-		dup 0=
-	until
-	2drop
-	false
+				\ -- xfersize c-bufaddr
+	_i2c_readbufpt2
 ;
 
 \ --------------------- Test stuff ------------------
