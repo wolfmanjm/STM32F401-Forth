@@ -39,7 +39,7 @@ $50 constant EEPROM_ADDRESS
 
 \ bulk read
 : eeprom-read ( n buf maddr -- errflg )
- 	EEPROM_ADDRESS i2c-mem-readbuf
+ 	EEPROM_ADDRESS i2c-memory-read
 ;
 
 \ can only write 64 bytes at a time, and must not cross 64 byte page boundary in one write

@@ -247,7 +247,7 @@
 \ returns true if error occured
 : i2c-waitforrxne ( -- errflg )
 	begin
-		%1000000 I2C1 _iSR1 bit@ 		\ wait for RXNE to set
+		$40 I2C1 _iSR1 bit@ 			\ wait for RXNE to set
 		$10 I2C1 _iSR1 bit@	or			\ Check if a STOPF is detected
 		i2c-checktmo or 				\ or timeout
 	until
@@ -337,15 +337,18 @@
 			\ -- xfersize c-bufaddr
 	swap 	\ -- buf xfersize
 	begin
- 		dup
-		case
-			0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
-			1 of over _i2c-mread1 endof
-			2 of over _i2c-mread2 endof
-			3 of over _i2c-mread3 endof
-				 \ more than 3
-				 over _i2c-mread4+
-		endcase
+ 		dup 3 <= if
+			dup case
+				0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
+				1 of over _i2c-mread1 endof
+				2 of over _i2c-mread2 endof
+				3 of over _i2c-mread3 endof
+					 ." ERROR unexpected xfersize >3" 2drop true exit
+			endcase
+		else 		\ more than 3
+			over _i2c-mread4+
+		then
+
 			  \ -- c-bufaddr xfersize n
 		dup 0= if 2drop drop true exit then  \ if error detected
 		\ increment buffer address by number of bytes read
@@ -362,22 +365,22 @@
 ;
 
 \ for i2c eeprom access, very subtle differences to i2c-readbuf
-: i2c-mem-readbuf ( n c-bufaddr memaddr slaveaddr -- errflg )
+: i2c-memory-read ( n c-bufaddr memaddr slaveaddr -- errflg )
 	3 pick 1 < if ." ERROR Must have at least 1 in buffer" 2drop 2drop true exit then
 
     i2c-start if 2drop 2drop true exit then
-    >r r@
-	i2c-7bitaddwrite i2c-sendaddr if r> 2drop 2drop true exit then
+    >r r@	\ save the chip address
+	i2c-7bitaddwrite i2c-sendaddr if rdrop drop 2drop true exit then
 	i2c-clearaddr
 	\ send 16bit memory address (This is slightly different to using i2c-send1)
 	1000 i2c-settmo
-	i2c-waitfortxe if r> 2drop 2drop true exit then
+	i2c-waitfortxe if rdrop drop 2drop true exit then
 	dup 8 rshift I2C1 _iDR !  					\ write MSB of memory address
-	i2c-waitfortxe if r> 2drop 2drop true exit then
+	i2c-waitfortxe if rdrop drop 2drop true exit then
     $00FF and I2C1 _iDR ! 						\ write LSB of memory address
-	i2c-waitfortxe if r> drop 2drop true exit then
+	i2c-waitfortxe if rdrop 2drop true exit then
 
-	i2c-restart if r> drop 2drop true exit then
+	i2c-restart if rdrop 2drop true exit then
 	r> i2c-7bitaddread i2c-sendaddr if 2drop true exit then
 
 	over \ n addr n
@@ -393,15 +396,18 @@
 			\ -- xfersize c-bufaddr
 	swap 	\ -- buf xfersize
 	begin
- 		dup
-		case
-			0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
-			1 of over _i2c-mread1 endof
-			2 of over _i2c-mread2 endof
-			3 of over _i2c-mread3 endof
-				 \ more than 3
-				 over _i2c-mread4+
-		endcase
+ 		dup 3 <= if
+			dup case
+				0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
+				1 of over _i2c-mread1 endof
+				2 of over _i2c-mread2 endof
+				3 of over _i2c-mread3 endof
+					 ." ERROR unexpected xfersize >3" 2drop true exit
+			endcase
+		else 		\ more than 3
+			over _i2c-mread4+
+		then
+
 			  \ -- c-bufaddr xfersize n
 		dup 0= if 2drop drop true exit then  \ if error detected
 		\ increment buffer address by number of bytes read
