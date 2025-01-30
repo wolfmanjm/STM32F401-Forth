@@ -324,27 +324,20 @@
 : _i2c_readbufpt2 ( xfersize c-bufaddr -- errflg )
 	swap 	\ -- buf xfersize
 	begin
- 		dup 3 <= if
-			dup case
-				0 of ." ERROR unexpected xfersize 0" 0 endof
-				1 of over _i2c-mread1 endof
-				2 of over _i2c-mread2 endof
-				3 of over _i2c-mread3 endof
-					 ." ERROR unexpected xfersize " . 0 0
-			endcase
-		else 		\ more than 3
-			over _i2c-mread4+
-		then
-
-			  \ -- c-bufaddr xfersize n
+		dup case
+			0 of ." ERROR unexpected xfersize 0" 0 endof
+			1 of over _i2c-mread1 endof
+			2 of over _i2c-mread2 endof
+			3 of over _i2c-mread3 endof
+		 		 \ more than 3 -- buf xfersize n
+	 			 drop over _i2c-mread4+
+	 			 0 \ for endcase to drop
+		endcase
+			  		\ -- c-bufaddr xfersize n
 		dup 0= if 2drop drop true exit then  \ if error detected
-		\ increment buffer address by number of bytes read
-		rot   \ -- xfersize n buf
-		over  \ -- xfersize n buf n
-		+ 	  \ -- xfersize n newbuf
-		-rot  \ -- newbuf xfersize n
-		-     \ decrement xfersize by number read
-			  \ -- buf xfersize
+		            \ increment buffer address by number of bytes read
+		rot over +  \ -- xfersize n newbuf
+		-rot -    	\ decrement xfersize by number read -- buf xfersize
 		dup 0=
 	until
 	2drop
