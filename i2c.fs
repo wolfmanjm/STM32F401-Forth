@@ -326,11 +326,11 @@
 	begin
  		dup 3 <= if
 			dup case
-				0 of ." ERROR unexpected xfersize 0" 2drop true exit endof
+				0 of ." ERROR unexpected xfersize 0" 0 endof
 				1 of over _i2c-mread1 endof
 				2 of over _i2c-mread2 endof
 				3 of over _i2c-mread3 endof
-					 ." ERROR unexpected xfersize >3" 2drop true exit
+					 ." ERROR unexpected xfersize " . 0 0
 			endcase
 		else 		\ more than 3
 			over _i2c-mread4+

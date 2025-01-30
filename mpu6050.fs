@@ -1,7 +1,7 @@
 \ mpu6050 driver
 \ #include i2c.fs
 
-6 buffer: i2c-buf
+6 buffer: mpu6050-i2c-buf
 $34 constant MPU6050_ADDR
 : x-badchip ." Chip ID is incorrect" cr ;
 : x-badread ." Did not read required amount of data" cr ;
@@ -21,8 +21,8 @@ $34 constant MPU6050_ADDR
 	i2c-start if 2drop $8000 exit then
 	MPU6050_ADDR i2c-send1 if drop $8000 exit then
     i2c-restart if drop $8000 exit then
-	dup i2c-buf MPU6050_ADDR i2c-readbuf if drop $8000 exit then
-	0 do i2c-buf i + c@ loop
+	dup mpu6050-i2c-buf MPU6050_ADDR i2c-readbuf if drop $8000 exit then
+	0 do mpu6050-i2c-buf i + c@ loop
 ;
 
 $75 constant MPU6050_WHO_AM_I
