@@ -1,7 +1,7 @@
 \ quadrature encoder driver
 \ on PA0 and PA1
 
-: set-pupd ( mode pin port -- )
+: set-pupdn ( mode pin port -- )
     >R 2* %11 over lshift r@ _pPUPDR bic! \ clear ..
     lshift R> _pPUPDR bis!                \ .. set
 ;
@@ -12,8 +12,8 @@
     MODE_Alternate 1 PORTA set-moder        \ PA0 & PA1 as Alternate Function
     SPEED_LOW 0 PORTA set-opspeed
     SPEED_LOW 1 PORTA set-opspeed           \ set speed
-    %01 0 PORTA set-pudn                    \ set to pullup
-    %01 1 PORTA set-pudn                    \ set to pullup
+    %01 0 PORTA set-pupdn                   \ set to pullup
+    %01 1 PORTA set-pupdn                   \ set to pullup
 
     1 0 PORTA set-alternate                 \ set AF01
     1 1 PORTA set-alternate
@@ -36,9 +36,11 @@
 ;
 
 : test-qei
+    qei-init
+    qei-get
     begin
         qei-get \ Get current position from Encoder
-        . cr
-        300 ms
+        dup 2 roll <> if dup 2/ 2/ . cr then
+        100 ms
     key? until
 ;
