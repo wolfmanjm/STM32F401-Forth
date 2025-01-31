@@ -1,7 +1,7 @@
 \ gpio-simple.fs
 
-\ #include lib_registers.txt
-\ #include lib_systick.txt
+\ \ #include lib_registers.txt
+\ \ #include lib_systick.txt
 
 : setbit 1 swap lshift ;  \ Calculates the value for bit 0 (LSB) to bit 31 (MSB)
 
@@ -75,3 +75,18 @@ PORTA 0 pin switch1
 	until
 ;
 
+PORTA 6 pin led2
+
+: test2
+	1 RCC _rAHB1ENR bis!					\ IO port A clock enabled GPIOAEN
+
+	led2 output
+	1 led2 set
+	1000 ms
+
+	begin
+		$01 cnt bit@ led2 set
+		200 ms
+		1 cnt +!
+	key? until
+;

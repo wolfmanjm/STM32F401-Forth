@@ -1,6 +1,7 @@
 \ quadrature encoder driver
 \ on PA0 and PA1
 
+\ TODO move to lib_registers
 : set-pupdn ( mode pin port -- )
     >R 2* %11 over lshift r@ _pPUPDR bic! \ clear ..
     lshift R> _pPUPDR bis!                \ .. set
