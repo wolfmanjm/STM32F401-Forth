@@ -188,6 +188,12 @@ $40000000 constant TIM2
 	lshift R> _pOSPEEDR bis!				\ .. set
 ;
 
+\ Port pull up/down register - 00=none  01=Pullup  10=Pulldown
+: set-pupd ( mode pin port -- )
+    >R 2* %11 over lshift r@ _pPUPDR bic! \ clear ..
+    lshift R> _pPUPDR bis!                \ .. set
+;
+
 \ Port alternate function
 : set-alternate ( af# pin# baseAddr -- )
 	>R dup 8 < if 

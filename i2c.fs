@@ -69,7 +69,7 @@
 	i2c-tmo?
 ;
 
-: i2c-restart ( -- )
+: i2c-restart ( -- errflg )
 	$100 I2C1 _iCR1 bis!   		\ Generate START
 	1000 i2c-settmo
 	begin %1 I2C1 _iSR1 bit@ i2c-checktmo or until 	\ wait for SB bit to set or timeout
@@ -81,7 +81,7 @@
 	then
 ;
 
-: i2c-start ( -- flg )
+: i2c-start ( -- errflg )
 	i2c-waitonbusy if true exit then
 	i2c-disablepos
 
