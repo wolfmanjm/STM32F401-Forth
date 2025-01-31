@@ -20,7 +20,7 @@
     1 1 lshift RCC _rAPB1ENR bis!			\ TIM3 clock enabled
 	1 7 lshift TIM3 _tCR1 ! 				\ Auto-reload preload enable ARPE
 	HCLK @ 2000 / 1- TIM3 _tPSC !			\ 42Mhz hclk prescaler -> 1000 Hz = 1 ms
-	100 50 pwm-set-pwm							\ 100ms - 50ms period - dutycycle as initial value
+	100 50 pwm-set-pwm						\ 100ms - 50ms period - dutycycle as initial value
 	1 0 lshift TIM3 _tCCER !				\ CC1E -> OC1 signal is output on the corresponding output pin
 	1 3 lshift TIM3 _tCCMR1 bis!			\ OC1PE -> Output compare 1 preload enable
 	%110 4 lshift TIM3 _tCCMR1 bis!			\ Output compare 1 mode -> 110: PWM mode 1
