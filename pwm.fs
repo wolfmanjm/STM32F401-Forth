@@ -1,5 +1,4 @@
 \ pwm driver
-\ WIP
 
 0 variable PWM_PERIOD_MS
 

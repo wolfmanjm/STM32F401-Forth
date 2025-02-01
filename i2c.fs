@@ -210,7 +210,7 @@
 ;
 
 \ optimized send 2 bytes to specified address and stop
-: i2c-send2stop ( n1 n2 slaveaddr -- errflg )
+: i2c-send2stop ( n2 n1 slaveaddr -- errflg )
     i2c-start if 2drop drop true exit then
     i2c-7bitaddwrite i2c-sendaddr if 2drop true exit then
 	i2c-clearaddr
@@ -231,15 +231,16 @@
 	false
 ;
 
+\ Must issue i2c-start before calling this and i2c-stop after
 : i2c-sendbuf ( n c-bufaddr slaveaddr -- errflg )
 	2 pick 2 < if ." ERROR Must have more than 1 in buffer" 2drop drop true exit then
 	i2c-7bitaddwrite i2c-sendaddr if 2drop true exit then
 	i2c-clearaddr
-	over						    \ n bufaddr n
-	0 do 					        \ for 0 to n-1, n bufaddr on stack
+	over						    \ -- n bufaddr n
+	0 do 					        \ for 0 to n-1, -- n bufaddr
 		dup i + c@
 		i2c! if unloop 2drop true exit then     \ write data or exit on error
-	loop  \ leaves n bufaddr on stack
+	loop  \ -- n bufaddr
 	2drop
 	false
 ;
