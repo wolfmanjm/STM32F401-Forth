@@ -105,10 +105,7 @@ $00 constant SSD1306_DC_BIT_CMD
 84 constant SSD1306_BUF_LGT
 
 : ssd1306-write ( n buf -- err )
-    i2c-start if 2drop true exit then
-	SSD1306_I2C_ADDR i2c-sendbuf if true exit then
-	i2c-stop
-	false
+	SSD1306_I2C_ADDR i2c-sendbufstop
 ;
 
 \ -------------------------------------------------------------------------

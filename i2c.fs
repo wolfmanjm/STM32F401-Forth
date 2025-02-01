@@ -231,9 +231,9 @@
 	false
 ;
 
-\ Must issue i2c-start before calling this and i2c-stop after
-: i2c-sendbuf ( n c-bufaddr slaveaddr -- errflg )
+: i2c-sendbufstop ( n c-bufaddr slaveaddr -- errflg )
 	2 pick 2 < if ." ERROR Must have more than 1 in buffer" 2drop drop true exit then
+    i2c-start if 2drop drop true exit then
 	i2c-7bitaddwrite i2c-sendaddr if 2drop true exit then
 	i2c-clearaddr
 	over						    \ -- n bufaddr n
@@ -241,6 +241,7 @@
 		dup i + c@
 		i2c! if unloop 2drop true exit then     \ write data or exit on error
 	loop  \ -- n bufaddr
+	i2c-stop
 	2drop
 	false
 ;
