@@ -218,7 +218,7 @@ SSD1306_BUF_LGT buffer: ssd1306-Txt-Buf
 
 \ Write a string to the display buffer starting at row and col position.
 \ Text is wrapped if it exceeds buffer size.
-: ssd1306-wrt-str ( row col str-addr str-lgt  -- )
+: ssd1306-wrt-str ( row col str-addr str-len  -- )
   \ Check limits 0 <= row < SSD1306_NUM_ROWS
   3 pick dup 0< swap SSD1306_NUM_ROWS 1 - > or if
     drop drop drop drop exit
@@ -391,4 +391,32 @@ SSD1306_BUF_LGT buffer: ssd1306-Txt-Buf
     display
     200 ms
   key? until
+;
+
+16 buffer: test-chars
+: _test-display-chars ( ch -- )
+	>r
+	ssd1306-clr-scrn
+	r@ 16 0 do dup      i + test-chars i + c! loop 0 2 test-chars 16 ssd1306-wrt-str drop
+	r@ 16 0 do dup 16 + i + test-chars i + c! loop 1 2 test-chars 16 ssd1306-wrt-str drop
+	r@ 16 0 do dup 32 + i + test-chars i + c! loop 2 2 test-chars 16 ssd1306-wrt-str drop
+	r@ 16 0 do dup 48 + i + test-chars i + c! loop 3 2 test-chars 16 ssd1306-wrt-str drop
+	rdrop
+	display
+	2000 ms
+;
+
+: test-fonts
+  	i2c-init
+  	ssd1306-init if exit then
+  	begin
+  		." 0..63" cr
+  		0   _test-display-chars
+  		." 64..127" cr
+  		64  _test-display-chars
+  		." 128..191" cr
+  		128 _test-display-chars
+  		." 192..255" cr
+  		192 _test-display-chars
+  	key? until
 ;
