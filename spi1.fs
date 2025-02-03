@@ -19,9 +19,9 @@ $11 constant SPI_MODE3
 
 : spi-init
     \ Enable SPI1 clock (on APB2)
-    1 12 lshift RCC _rAPB2ENR   \ Set SPI1EN bit
+    1 12 lshift RCC _rAPB2ENR bis!   \ Set SPI1EN bit
     \ Enable GPIOA clock
-    1 RCC _rAHB1ENR             \ Enable GPIOA clock
+    1 RCC _rAHB1ENR bis!            \ Enable GPIOA clock
 
     \ Configure PB3 (SCK), PB4 (MISO), PB5 (MOSI)
     MODE_Alternate 3 PORTA set-moder
@@ -85,12 +85,12 @@ $11 constant SPI_MODE3
 
 : spi! ( data -- )
     begin %10 SPI1 _sSR bit@ until \ Wait for TXE
-    SPI1 _sDR                      \ Send data
+    SPI1 _sDR !                    \ Send data
 ;
 
 : spi@ ( -- data )
     begin %1 SPI1 _sSR bit@ until   \ Wait for RXNE
-    SPI1 _sDR                       \ Read received data
+    SPI1 _sDR @                     \ Read received data
 ;
 
 : spi-read1 ( -- data)

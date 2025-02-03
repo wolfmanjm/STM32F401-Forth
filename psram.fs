@@ -50,7 +50,7 @@ PORTB 6 pin PSRAM_CS
 
 	1 PSRAM_CS set
 
-	." jedec id= " hex. hex. hex. cr
+	." jedec id= " rot hex.2 swap hex.2 hex.2 cr
 
 	s" 123456789" swap 0 psram-write drop
 	9 psram_buf 0 psram-read drop
