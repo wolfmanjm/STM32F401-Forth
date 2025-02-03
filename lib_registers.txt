@@ -103,6 +103,7 @@ $40020000 constant PORTA
 
 $40003C00 constant SPI3					\ SPI 3 register map
 $40003800 constant SPI2					\ SPI 2 register map
+$40013000 constant SPI1
 	registers
 		reg _sCR1		\ SPI control register
 		reg _sCR2		\ SPI control register 2
