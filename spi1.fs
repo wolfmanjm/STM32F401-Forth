@@ -20,27 +20,27 @@ $11 constant SPI_MODE3
 : spi-init
     \ Enable SPI1 clock (on APB2)
     1 12 lshift RCC _rAPB2ENR bis!   \ Set SPI1EN bit
-    \ Enable GPIOA clock
-    1 RCC _rAHB1ENR bis!            \ Enable GPIOA clock
+    \ Enable GPIOB clock
+    2 RCC _rAHB1ENR bis!            \ Enable GPIOB clock
 
     \ Configure PB3 (SCK), PB4 (MISO), PB5 (MOSI)
-    MODE_Alternate 3 PORTA set-moder
-    MODE_Alternate 4 PORTA set-moder
-    MODE_Alternate 5 PORTA set-moder
+    MODE_Alternate 3 PORTB set-moder
+    MODE_Alternate 4 PORTB set-moder
+    MODE_Alternate 5 PORTB set-moder
 
     \ Select AF5 (SPI1) for these pins
-    5 3 PORTA set-alternate
-    5 4 PORTA set-alternate
-    5 5 PORTA set-alternate
+    5 3 PORTB set-alternate
+    5 4 PORTB set-alternate
+    5 5 PORTB set-alternate
 
     \ Set GPIO pins to High-speed mode
-    SPEED_HIGH 3 PORTA set-opspeed
-    SPEED_HIGH 4 PORTA set-opspeed
-    SPEED_HIGH 5 PORTA set-opspeed
+    SPEED_HIGH 3 PORTB set-opspeed
+    SPEED_HIGH 4 PORTB set-opspeed
+    SPEED_HIGH 5 PORTB set-opspeed
 
     \ Set push-pull mode and no pull-up/pull-down
-    1 3 lshift 1 4 lshift or 1 5 lshift or PORTA _pOTYPER bic!
-    1 3 lshift 1 4 lshift or 1 5 lshift or PORTA _pPUPDR bic!
+    1 3 lshift 1 4 lshift or 1 5 lshift or PORTB _pOTYPER bic!
+    1 3 lshift 1 4 lshift or 1 5 lshift or PORTB _pPUPDR bic!
 
     \ Disable SPI before configuring and set everything to 0
     0 SPI1 _sCR1 !
@@ -79,21 +79,42 @@ $11 constant SPI_MODE3
     %10000000 SPI1 _sSR bit@        \ check Busy
 ;
 
+: spi-waitbusy
+    begin spi-busy? not until
+;
+
 : spi-enable ( flg -- )
     %1000000 SPI1 _sCR1 rot if bis! else bic! then
 ;
 
-: spi! ( data -- )
+: _spi! ( data -- )
     begin %10 SPI1 _sSR bit@ until \ Wait for TXE
     SPI1 _sDR !                    \ Send data
 ;
 
-: spi@ ( -- data )
+: _spi@ ( -- data )
     begin %1 SPI1 _sSR bit@ until   \ Wait for RXNE
     SPI1 _sDR @                     \ Read received data
 ;
 
-: spi-read1 ( -- data)
-    0 spi!
-    spi@
+: spi!@ ( txdata -- rxdata )
+    _spi! _spi@
 ;
+
+: spi-write1 ( data -- )
+    spi!@ drop
+;
+
+: spi-read1 ( -- data )
+    0 spi!@
+;
+
+\ stack based i/o
+: >spi ( d1 d2 d3 ... dn n -- )
+    0 do spi-write1 loop
+;
+
+: spi> ( n .. d1 d2 d3 ... dn )
+    0 do spi-read1 loop
+;
+
