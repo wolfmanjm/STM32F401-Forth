@@ -3,8 +3,7 @@
 \ #include spi1.fs
 \ #include gpio-simple.fs
 
-\ 1024 8 * 1024 * constant PSRAM_MEMSIZE \ 8MB ram size
-1024 1024 * 2 * constant PSRAM_MEMSIZE \ 8MB ram size
+1024 8 * 1024 * constant PSRAM_MEMSIZE \ 8MB ram size
 
 PORTB 6 pin PSRAM_CS
 
@@ -118,26 +117,18 @@ PORTB 6 pin PSRAM_CS
 	cr ." writing "
 	setseed
 
-	true psram-cs
-	0 $02 psram-cmd-addr
 	PSRAM_MEMSIZE 4 / 4 - 1 do
+		true psram-cs
+		i 1- 4 * $02 psram-cmd-addr
 		random
 		dup           $FF and spi-write1
 		dup 8  rshift $FF and spi-write1
 		dup 16 rshift $FF and spi-write1
 			24 rshift $FF and spi-write1
-
-		\ page boundary is 1024
-		i 252 mod 0= if
-			spi-waitbusy
-			false psram-cs
-			true psram-cs
-			i 4 + 4 * $02 psram-cmd-addr
-		then
-		i 2048 mod 0= if ." ." then
+		spi-waitbusy
+		false psram-cs
+		i 262144 mod 0= if ." ." then
 	loop
-	spi-waitbusy
-	false psram-cs
 ;
 
 0 variable memerr
@@ -146,29 +137,24 @@ PORTB 6 pin PSRAM_CS
 	." reading "
 	setseed
 
-	true psram-cs
-	0 $03 psram-cmd-addr
 	PSRAM_MEMSIZE 4 / 4 - 1 do
+		true psram-cs
+		i 1- 4 * $03 psram-cmd-addr
 		i memerr !
 		random
 		spi-read1 over 	 		 $FF and <> if leave then
 		spi-read1 over 8  rshift $FF and <> if leave then
 		spi-read1 over 16 rshift $FF and <> if leave then
 		spi-read1 swap 24 rshift $FF and <> if leave then
-
-		\ page boundary is 1024
-		i 252 mod 0= if
-			spi-waitbusy
-			false psram-cs
-			true psram-cs
-			i 4 + 4 * $03 psram-cmd-addr
-		then
-		i 2048 mod 0= if ." ." then
+		spi-waitbusy
+		false psram-cs
+		i 262144 mod 0= if ." ." then
 		0 memerr !
 	loop
-	memerr @ 0<> if ." memory error @ " memerr @ . then
-	spi-waitbusy
-	false psram-cs
+	memerr @ 0<> if
+		false psram-cs
+		." memory error @ " memerr @ 4 * .
+	then
 ;
 
 : memtest
