@@ -1,5 +1,7 @@
 \ \ #include i2c.fs
 \ #include glcdfont.fs
+#require i2c.fs
+#require glcdfont.fs
 
 \ -------------------------------------------------------------------------
 \  Misc. helper words, constants, and variables

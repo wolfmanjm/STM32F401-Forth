@@ -1,6 +1,7 @@
 \ 24lc256 i2c eeprom driver
 
 \ \ #include i2c.fs
+#require i2c.fs
 
 $50 constant EEPROM_ADDRESS
 

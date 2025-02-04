@@ -1,11 +1,1 @@
-#!/bin/bash
-
-n=0
-
-case $1 in
-    -[1-9]*)
-	n=${1#-}
-	;;
-esac
-
-picocom -b 115200 /dev/ttyUSB$n --imap lfcrlf,crcrlf --omap delbs,crlf --send-cmd "xfr.py -c -e -s"
+../zeptoforth/e4thcom-0.8.5.2/e4thcom -t mecrisp-st -b B115200 -d ttyUSB0

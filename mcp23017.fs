@@ -1,5 +1,6 @@
 \ mcp23017 driver
 \ #include i2c.fs
+#require i2c.fs
 
 $20 constant MCP23017_I2C_ADDRESS
 

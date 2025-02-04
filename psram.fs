@@ -3,6 +3,9 @@
 \ #include spi1.fs
 \ #include gpio-simple.fs
 
+#require spi1.fs
+#require gpio-simple.fs
+
 1024 8 * 1024 * constant PSRAM_MEMSIZE \ 8MB ram size
 
 PORTB 6 pin PSRAM_CS
