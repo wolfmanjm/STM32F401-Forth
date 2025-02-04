@@ -87,6 +87,8 @@ $11 constant SPI_MODE3
     %1000000 SPI1 _sCR1 rot if bis! else bic! then
 ;
 
+\ NOTE all the following need to be preceded by enabling the relevant chip select
+\ and a wait on the busy flag at the end before deasserting the chip select
 : _spi! ( data -- )
     begin %10 SPI1 _sSR bit@ until \ Wait for TXE
     SPI1 _sDR !                    \ Send data
