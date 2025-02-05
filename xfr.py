@@ -55,8 +55,12 @@ def xfr(parent_fname, parent_lineno, fname):
             raise FileNotFoundException(fname)
         for line in open(fpath, "rt"):
             lineno += 1
-            if line.startswith("\\ #include "):
-                fn = line[11:].strip()
+            if line.startswith("\\ #include ") or line.startswith("#require "):
+                if line.startswith("#require "):
+                    fn = line[9:].strip()
+                else:
+                    fn = line[11:].strip()
+
                 if fn not in included:
                     sys.stderr.write(f"*** Including {fn} ***\n")
                     included.append(fn)

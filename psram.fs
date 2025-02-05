@@ -1,8 +1,5 @@
 \ psram driver SPI
 
-\ #include spi1.fs
-\ #include gpio-simple.fs
-
 #require spi1.fs
 #require gpio-simple.fs
 
