@@ -8,10 +8,7 @@ $68 constant MPU6050_ADDR
 : x-badread ." Did not read required amount of data" cr ;
 
 : mpu6050-get-reg ( reg -- val )
-    i2c-start if drop $8000 exit then
-    MPU6050_ADDR i2c-send1 if $8000 exit then
-    i2c-restart if $8000 exit then
-    MPU6050_ADDR i2c-read1
+	MPU6050_ADDR i2c-getreg
 ;
 
 : mpu6050-set-reg ( val reg -- )

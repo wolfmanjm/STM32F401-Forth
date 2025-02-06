@@ -368,7 +368,7 @@
 \ convenience for sending a byte and reading a byte, usually for a register read on many chips
 : i2c-getreg ( reg addr -- val )
     i2c-start if 2drop $8000 exit then
-    r> r@ i2c-send1 i2c-restart or if rdrop $8000 exit then
+    >r r@ i2c-send1 i2c-restart or if rdrop $8000 exit then
     r> i2c-read1
 ;
 

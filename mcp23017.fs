@@ -33,10 +33,7 @@ $15 constant MCP23017_OLAT_B    \  Provides access to the port B output latches.
 
 \ if bit 15 is set it is an error
 : mcp23017-get-reg ( reg -- val )
-    i2c-start if drop $8000 exit then
-    MCP23017_I2C_ADDRESS i2c-send1 if $8000 exit then
-    i2c-restart if $8000 exit then
-    MCP23017_I2C_ADDRESS i2c-read1
+    MCP23017_I2C_ADDRESS i2c-getreg
 ;
 
 : mcp23017-init
