@@ -1,1 +1,1 @@
-../zeptoforth/e4thcom-0.8.5.2/e4thcom -t mecrisp-st -b B115200 -d ttyUSB0
+../zeptoforth/e4thcom-0.8.5.2/e4thcom -t mecrisp-st -b B115200 -d ttyUSB0 -p ./rwheel

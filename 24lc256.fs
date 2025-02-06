@@ -44,7 +44,16 @@ $50 constant EEPROM_ADDRESS
 
 \ can only write 64 bytes at a time, and must not cross 64 byte page boundary in one write
 : eeprom-write ( n buf addr -- errflg )
-\ TODO check for page boundary and break up writes accordingly
+	\ check for page boundary and break up writes accordingly
+	dup 64 mod 64 swap - >r
+	2 pick r@ > if
+		r@ 2 pick 2 pick recurse if rdrop 2drop drop true exit then
+		rot r@ - rot r@ + rot r> + recurse if 2drop drop true exit then
+		false exit
+	then
+	rdrop
+
+	\ do actual write
     i2c-start if 2drop drop true exit then
     eeprom-setaddress if 2drop true exit then
  	swap 0 do
@@ -84,7 +93,7 @@ $50 constant EEPROM_ADDRESS
 	eeprom-read1 . cr
 ;
 
-32 buffer: tmp
+200 buffer: tmp
 : test-readbulk ( n -- )
 	cr
 	i2c-init
@@ -116,5 +125,19 @@ $50 constant EEPROM_ADDRESS
 	loop
 
 	32 tmp 0 eeprom-write if ." eeprom failed to write" exit then
+;
+
+: test-writebulk200 ( -- )
+	i2c-init
+	eeprom-init if ." eeprom failed to init" exit then
+	200 0 do
+		i 1+ tmp i + c!
+	loop
+
+	200 tmp 0 eeprom-write if ." eeprom failed to write" exit then
+
+	200 0 do
+		i eeprom-read1 i 1+ <> if ." error " then
+	loop
 ;
 

@@ -202,6 +202,9 @@
 	i2c-waitfortxbtf
 ;
 
+\ NOTE most of the following require that i2c-start be sent first,
+\ and writes must send i2c-stop afterwards
+
 \ send single byte to specified address, sets up for further writes using i2c!
 : i2c-send1 ( c slaveaddr -- errflg )
 	i2c-7bitaddwrite i2c-sendaddr if drop true exit then
@@ -360,6 +363,13 @@
 	endcase
 				\ -- xfersize c-bufaddr
 	_i2c_readbufpt2
+;
+
+\ convenience for sending a byte and reading a byte, usually for a register read on many chips
+: i2c-getreg ( reg addr -- val )
+    i2c-start if 2drop $8000 exit then
+    r> r@ i2c-send1 i2c-restart or if rdrop $8000 exit then
+    r> i2c-read1
 ;
 
 \ for i2c eeprom access, very subtle differences to i2c-readbuf
