@@ -5,7 +5,6 @@
 #require qei.fs
 #require motor.fs
 #require mini-imu-9.fs
-#require console.fs
 
 : react-init
 	motor-init
@@ -13,7 +12,6 @@
 	accel-init
 	gyro-init
 	accel-default
-	\ uart-init
 ;
 
 0 variable accOffsetX
@@ -64,6 +62,11 @@ false variable calibrated
 
 0 variable pwm
 
+#require console.fs
+
+\ timing stuff uses (my builtin) cycles.fs adjust for 84MHz clock
+: usecs  ( -- us ) cycles 84 / ;
+: usecdelta  ( old -- us ) usecs swap -  ;
 
 : print-robot-angle
 	." Acc Angle: " AccAngle 2@ f.r3
@@ -133,7 +136,7 @@ pi 2,0 f* 2constant 2pi
 	    5 ms
   	loop
   	1000,0 f/ f>s GyZOffset !
-  	70 buzz 80 buzz 70 buzz
+  	70 buzz 10 ms 80 buzz 10 ms 70 buzz
     ." GyZ offset value: " GyZOffset @ . cr
     print-robot-angle
 ;
@@ -150,6 +153,6 @@ pi 2,0 f* 2constant 2pi
 			print-robot-angle
 			usecs prev2 !
 		then
-		1000 us
+		1 ms
 	key? until
 ;

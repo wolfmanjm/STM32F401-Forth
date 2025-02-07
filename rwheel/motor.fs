@@ -1,7 +1,6 @@
 #require gpio-simple.fs
 #require pwm.fs
 #require qei.fs
-#require cycles.fs
 
 PORTA 11 pin STBYpin
 PORTA 10 pin IN1pin
@@ -26,7 +25,6 @@ PORTA  8 pin buzzer
 	HIGH STBYpin set  	\ PA11
 	LOW buzzer set  	\ PA8
 	qei-init 			\ PA0 PA1
-	init-cycles
 ;
 
 : M_FORWARD  LOW IN2pin set  HIGH IN1pin set ;
