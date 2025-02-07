@@ -190,6 +190,7 @@ $2D constant L3G_OUT_Z_H
 : n.8 DUP ABS 0 <# #s ROT SIGN #> dup 8 swap - spaces type ;
 
 : testacc
+	lsm303-init
 	begin
 		readAcc
 		-rot swap
@@ -202,6 +203,7 @@ $2D constant L3G_OUT_Z_H
 ;
 
 : testmag
+	lsm303-init
 	begin
 		readMag
 		-rot swap

@@ -1,6 +1,7 @@
 #require gpio-simple.fs
 #require pwm.fs
 #require qei.fs
+#require cycles.fs
 
 PORTA 11 pin STBYpin
 PORTA 10 pin IN1pin
@@ -19,11 +20,13 @@ PORTA  8 pin buzzer
 	buzzer output
 	PWM-init     		\ PA6
 	0 pwm-duty_cycle_255
+	true pwm-enable
 	LOW IN1pin set  	\ PA10
 	LOW IN2pin set  	\ PA9
 	HIGH STBYpin set  	\ PA11
 	LOW buzzer set  	\ PA8
 	qei-init 			\ PA0 PA1
+	init-cycles
 ;
 
 : M_FORWARD  LOW IN2pin set  HIGH IN1pin set ;
@@ -84,20 +87,15 @@ false variable rpm-dir
 	f/ 0,5 f+ f>s		\ RPM round up and truncate
 ;
 
-: usecdelta  ( old -- us ) NVIC_ST_CURRENT_R @ 8 lshift - 8 rshift 4 / ;
-: usecs  ( -- us ) NVIC_ST_CURRENT_R @ 8 lshift ;
-
-: test-rpm ( speed -- )
+: test-rpm ( pwm -- )
 	motor-init
-	255 set-motor
+	false motor-standby
+	set-motor
 	1000 ms    	\ give time to wind up
 	rpm-init
 	begin
-		usecs
 		300 ms
-		usecdelta 1000 / dup >r \ get time in ms
-		get-rpm . ." RPM, "
-		." time " r> . ." ms" cr
+		300 get-rpm . ." RPM" cr
  	key? until
 	0 set-motor
 	true motor-standby

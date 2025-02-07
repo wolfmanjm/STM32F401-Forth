@@ -1,6 +1,6 @@
 #require mini-imu-9.fs
 
-: angle_calc ( ax ay az -- fpangle )
+: imu-angle_calc ( ax ay az -- fpangle )
 	\ Acc_angle = atan2(AcY, -AcX) * 57.2958;
 	drop
 	\ convert to FP
@@ -199,7 +199,7 @@
 	i2c-init accel-init gyro-init
 	begin
 		readAcc
-		angle_calc
+		imu-angle_calc
 		f.r2
 		cr
 		100 ms
