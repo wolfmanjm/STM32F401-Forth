@@ -130,9 +130,25 @@ PORTB 6 pin PSRAM_CS
     seed !
 ;
 
+\ 1024 constant buffer-size
+\ buffer-size buffer: tmpbuf
+
+\ : fill-random-buf ( size bufaddr -- )
+\ 	swap
+\ 	0 do
+\ 		random over i + c!
+\ 	loop
+\ ;
+
 : psram-memtestwr ( seed -- )
 	cr ." writing "
 	setseed
+
+	\ PSRAM_MEMSIZE 0 do
+	\ 	buffer-size tmpbuf fill-random-buf
+	\ 	buffer-size tmpbuf i psram-write
+	\ 	i 262144 mod 0= if ." ." then
+	\ buffer-size +loop
 
 	PSRAM_MEMSIZE 4 / 4 - 1 do
 		true psram-cs
