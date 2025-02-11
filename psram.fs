@@ -13,6 +13,15 @@ PORTB 6 pin PSRAM_CS
 	PSRAM_CS set
 ;
 
+: psram-init
+	PSRAM_CS output
+	false psram-cs
+	\ SPISettings(4000000, MSBFIRST, SPI_MODE0));
+	spi-init
+	4000000 spi-baud
+	SPI_MODE0 spi-mode
+;
+
 \ writes command and address
 : psram-cmd-addr ( addr cmd -- )
 	spi-write1
@@ -78,11 +87,7 @@ PORTB 6 pin PSRAM_CS
 
 10 buffer: psram_buf
 : test-psram
-	PSRAM_CS output
-	false psram-cs
-	\ SPISettings(4000000, MSBFIRST, SPI_MODE0));
-	spi-init
-	4000000 spi-baud
+	psram-init
 
 	\ read id
 	true psram-cs
@@ -109,7 +114,7 @@ PORTB 6 pin PSRAM_CS
 	\ write data from the stack to address 16
 	6 5 4 3 2 1 depth $10 >psram
 
-	\ read data onto the stack note will be in reverse order so addr 16 will be last on the stack
+	\ read data onto the stack note will be in reverse order so addr 6 will be last on the stack
 	6 $10 psram>
 	depth reverse depth 0 do . loop cr
 	\ 6 ['] . apply-top cr
@@ -192,10 +197,7 @@ PORTB 6 pin PSRAM_CS
 
 : ps-ram-memtest
 	." testing " PSRAM_MEMSIZE 1024 / . ." KBytes" cr
-	PSRAM_CS output
-	false psram-cs
-	spi-init
-	4000000 spi-baud
+	psram-init
 	$1357
 	begin
 		dup psram-memtestwr

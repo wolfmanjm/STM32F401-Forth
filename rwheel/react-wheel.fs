@@ -102,9 +102,9 @@ pi 2,0 f* 2constant 2pi
     -255 255 constrain pwm !
 ;
 
-: dopid
+: dopid ( -- exitflg )
 	prev1 @ usecdelta 8000 u>= if  \ 8ms looptime
-		console
+		console if true exit then
 		angle_calc
 
 		vertical @ if
@@ -124,6 +124,7 @@ pi 2,0 f* 2constant 2pi
 
 		usecs prev1 !
 	then
+	false
 ;
 
 : angle-setup
@@ -136,7 +137,7 @@ pi 2,0 f* 2constant 2pi
 	    5 ms
   	loop
   	1000,0 f/ f>s GyZOffset !
-  	70 buzz 10 ms 80 buzz 10 ms 70 buzz
+  	70 buzz 80 ms 70 buzz
     ." GyZ offset value: " GyZOffset @ . cr
     print-robot-angle
 ;
@@ -148,11 +149,11 @@ pi 2,0 f* 2constant 2pi
 
 	usecs dup prev1 ! prev2 !
 	begin
-		dopid
+		dopid if exit then
 		prev2 @ usecdelta 300000 u>= if \ 300ms print time
 			print-robot-angle
 			usecs prev2 !
 		then
 		1 ms
-	key? until
+	again
 ;

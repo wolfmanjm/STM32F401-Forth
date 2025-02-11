@@ -62,11 +62,11 @@
       \ }
 ;
 
-: console
-    uart-rx-ready not if exit then
+: console ( -- exitflg )
+    uart-rx-ready not if false exit then
     uart-get        \ param
-    2 ms
-    uart-rx-ready false = if drop exit then
+    5 ms
+    uart-rx-ready false = if drop false exit then
     uart-get        \ cmd
     uart-flush
     swap
@@ -76,10 +76,12 @@
         [char] s of 1,0   K4Gain inc-dec print-values endof
         [char] a of 0,005 K3Gain inc-dec print-values endof
         [char] c of calibrate-set  endof
+        [char] x of true exit endof
         s" Unknown command: " uart-puts uart-putc
     endcase
+    false
 ;
 
 : test-console
-	begin console key? until
+	begin console until
 ;

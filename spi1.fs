@@ -61,6 +61,12 @@ $11 constant SPI_MODE3
     1 6 lshift SPI1 _sCR1 bis!
 ;
 
+: spi-mode ( mode -- )
+    \ Set Clock Polarity (CPOL) and Clock Phase (CPHA)
+    %11 and
+    %11 0 SPI1 _sCR1 bits!
+;
+
 \ find the closest baud rate that is slower or equal to the requested one
 : spi-baud ( baud -- )
     8 0 do

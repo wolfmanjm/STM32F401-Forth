@@ -3,8 +3,8 @@
 #require qei.fs
 
 PORTA 11 pin STBYpin
-PORTA 10 pin IN1pin
-PORTA  9 pin IN2pin
+PORTB  5 pin IN1pin
+PORTB  6 pin IN2pin
 PORTA  8 pin buzzer
 
 10 variable lowLimit
@@ -20,8 +20,8 @@ PORTA  8 pin buzzer
 	PWM-init     		\ PA6
 	0 pwm-duty_cycle_255
 	true pwm-enable
-	LOW IN1pin set  	\ PA10
-	LOW IN2pin set  	\ PA9
+	LOW IN1pin set  	\ PB5
+	LOW IN2pin set  	\ PB6
 	HIGH STBYpin set  	\ PA11
 	LOW buzzer set  	\ PA8
 	qei-init 			\ PA0 PA1
