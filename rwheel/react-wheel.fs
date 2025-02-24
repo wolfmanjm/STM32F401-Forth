@@ -4,14 +4,12 @@
 #require pwm.fs
 #require qei.fs
 #require motor.fs
-#require mini-imu-9.fs
+#require mpu6050.fs
 
 : react-init
 	motor-init
 	i2c-init
-	accel-init
-	gyro-init
-	accel-default
+	mpu6050-init mpu6050-setup
 ;
 
 0 variable accOffsetX
@@ -28,11 +26,11 @@ false variable calibrated
 8,0 2constant loop_time
 
 : angle_calc ( -- )
-	readAcc drop accOffsetY @ - swap accOffsetX @ - \ AcYc AcXc
+	read-acc drop accOffsetY @ - swap accOffsetX @ - \ AcYc AcXc
 	\ Acc_angle = atan2(AcYc, -AcXc)
 	s>f dnegate rot s>f 2swap atan2 AccAngle 2!
 
-	readGyro nip nip GyZOffset @ - s>f GyZ 2!
+	read-gyro nip nip GyZOffset @ - s>f GyZ 2!
 
 	\ robot_angle += GyZ * loop_time / 1000 / 65.536;
 	GyZ 2@ loop_time f* 1000,0 f/ 65,536 f/ robot_angle f+!

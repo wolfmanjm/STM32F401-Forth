@@ -5,6 +5,7 @@ compiletoflash
 #include utils.fs
 #include fixpt-math-lib.fs
 #include cycles.fs
+#include memstat.fs
 
 : init
 	84MHz

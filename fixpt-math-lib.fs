@@ -439,7 +439,7 @@ numbertable atan-table
     1,0 d> swap 33 < and while
     ( retval y cum_m )
     rot rot 0 -rot        \ m = 0, z = y
-    ( retval cum_m m z)
+    ( retval cum_m m z )
     \ Do z = z*z, m = m+1 until 2 <= z.  We also get z < 4
     begin
       2dup f* rot 1 + -rot
@@ -599,7 +599,8 @@ numbertable exp-coef
   ( n z )
   \ Get exp(z*ln2) = 2^z, then shift n times to get 2^x = (2^n)*(2^z)
   lnof2 f* exp-1to1 2swap nip
-  ( 2^z n )  \ n now a single
+  ( 2^z n )
+  \ n now a single
   dup 0= if
     drop
   else
